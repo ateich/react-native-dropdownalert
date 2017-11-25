@@ -11,6 +11,7 @@ import {
   Image,
   PanResponder,
   ViewPropTypes,
+  SafeAreaView
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { StatusBarDefaultBarStyle, StatusBarDefaultBackgroundColor, DEFAULT_IMAGE_DIMENSIONS, WINDOW, IS_IOS, IS_ANDROID } from './constants';
@@ -104,7 +105,7 @@ export default class DropdownAlert extends Component {
     },
     defaultContainer: {
       padding: 8,
-      paddingTop: IS_ANDROID ? 0 : 20,
+      paddingTop: 0,
       flexDirection: 'row',
     },
     defaultTextContainer: {
@@ -427,24 +428,29 @@ export default class DropdownAlert extends Component {
             disabled={!this.props.tapToCloseEnabled}
             onLayout={event => this.onLayoutEvent(event)}
           >
-            <View style={style}>
-              <ImageView style={StyleSheet.flatten(this.props.imageStyle)} source={source} />
-              <View style={StyleSheet.flatten(this.props.defaultTextContainer)}>
-                <Label style={StyleSheet.flatten(this.props.titleStyle)} numberOfLines={this.props.titleNumOfLines} text={this.state.title} />
-                <Label style={StyleSheet.flatten(this.props.messageStyle)} numberOfLines={this.props.messageNumOfLines} text={this.state.message} />
+            <SafeAreaView
+              style={{flex: 1, backgroundColor}}
+              forceInset={{ top: 'always', bottom: 'never'}}
+            >
+              <View style={style}>
+                <ImageView style={StyleSheet.flatten(this.props.imageStyle)} source={source} />
+                <View style={StyleSheet.flatten(this.props.defaultTextContainer)}>
+                  <Label style={StyleSheet.flatten(this.props.titleStyle)} numberOfLines={this.props.titleNumOfLines} text={this.state.title} />
+                  <Label style={StyleSheet.flatten(this.props.messageStyle)} numberOfLines={this.props.messageNumOfLines} text={this.state.message} />
+                </View>
+                {showCancel &&
+                  <TouchableOpacity
+                    style={{
+                      alignSelf: this.props.cancelBtnImageStyle.alignSelf,
+                      width: this.props.cancelBtnImageStyle.width,
+                      height: this.props.cancelBtnImageStyle.height,
+                    }}
+                    onPress={() => this.close('cancel')}
+                  >
+                    <ImageView style={this.props.cancelBtnImageStyle} source={this.props.cancelBtnImageSrc} />
+                  </TouchableOpacity>}
               </View>
-              {showCancel &&
-                <TouchableOpacity
-                  style={{
-                    alignSelf: this.props.cancelBtnImageStyle.alignSelf,
-                    width: this.props.cancelBtnImageStyle.width,
-                    height: this.props.cancelBtnImageStyle.height,
-                  }}
-                  onPress={() => this.close('cancel')}
-                >
-                  <ImageView style={this.props.cancelBtnImageStyle} source={this.props.cancelBtnImageSrc} />
-                </TouchableOpacity>}
-            </View>
+            </SafeAreaView>
           </TouchableOpacity>
         </Animated.View>
       );
